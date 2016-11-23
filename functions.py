@@ -42,7 +42,6 @@ def action_type(data):
     action = data.split(' ')[1]
     return action
 
-#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie
 #irc message format
 
 #TODO: make help/list of commands feature (possibly by having a description = var via OOP?)
@@ -89,6 +88,20 @@ def ping_pong(data):
         #there's probably a more elegant way to do this
         raw_send('PONG ' + data.decode().split()[1])
 
+#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
+
+#parses incoming irc messages
+def parse_message(message):
+    #convert to str
+    split_on_colon = message.split(':')
+    #this prevents messages with colons in them from breaking the split, e.g.
+    #:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie:'
+    if len(split_on_colon) <= 3:
+        #the actual message contained in the irc data
+        return split_on_colon[len(split_on_colon)-1]
+
+
+
 #salesforce functions
 
 #https://c.na7.visual.force.com/apex/Case_View?sbstr=$CASENUMBER
@@ -104,6 +117,7 @@ def parse_case_number(message):
     #TODO: Fix error where message ending in ':' throws IndexError
     split_on_colon = message.split(':')
     split_into_words = split_on_colon[len(split_on_colon)-1].split(' ')
+
     for word in split_into_words:
         if word[len(word)-1] == '!' or word[len(word)-1] == '?':
             try:
@@ -114,7 +128,7 @@ def parse_case_number(message):
                 case_number = word[:-1]
             except ValueError:
                 pass
-        elif len(split_into_words) > 0:
+        else:
             try:
                 print(word)
                 #check if it's a number, slice off the last char in case it's a '?' or '!'
