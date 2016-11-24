@@ -94,13 +94,16 @@ def ping_pong(data):
 def parse_message(message):
     #convert to str
     split_on_colon = message.split(':')
-    #this prevents messages with colons in them from breaking the split, e.g.
-    #:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie:'
+
     if len(split_on_colon) <= 3:
         #the actual message contained in the irc data
         return split_on_colon[len(split_on_colon)-1]
-
-
+    #exception handling for messages with extra colons in them, e.g.
+    #:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie:'
+    elif len(split_on_colon) == 4:
+        return split_on_colon[len(split_on_colon)-2]
+    else:
+        irc.send (bytes('PRIVMSG {} :Slow down on the colons!\r\n'.format(channel), 'UTF-8'))
 
 #salesforce functions
 
@@ -110,35 +113,23 @@ def parse_message(message):
 #  :bowtie|24x7|brb!~sgreenbe@10.12.212.97 PRIVMSG #Spot-testing-grounds :!help
 
 #parses case numbers out of irc messages
+#TODO: restrict results to 0-200000
 def parse_case_number(message):
 
-    #this is the case number to return
-    case_number = ' '
-    #TODO: Fix error where message ending in ':' throws IndexError
-    split_on_colon = message.split(':')
-    split_into_words = split_on_colon[len(split_on_colon)-1].split(' ')
+    case_number = 0
+    message = parse_message(message)
+    #split the message into individual words
+    message_words_array = message.split(' ')
 
-    for word in split_into_words:
-        if word[len(word)-1] == '!' or word[len(word)-1] == '?':
-            try:
-                print(word)
-                #check if it's a number, slice off the last char in case it's a '?' or '!'
-                int(word[:-1])
-                #NOTE: this if more than one number is in the message, the last will be our result
-                case_number = word[:-1]
-            except ValueError:
-                pass
-        else:
-            try:
-                print(word)
-                #check if it's a number, slice off the last char in case it's a '?' or '!'
-                int(word)
-                #NOTE: this if more than one number is in the message, the last will be our result
-                case_number = word
-            except ValueError:
-                pass
-
-    return case_number
+    for word in message_words_array:
+        try:
+            #slice the first digit in case it's a '0'
+            case_number = int(word[1:])
+            if case_number > 0 and case_number < 2000000:
+                #we have to return this as a string so we can use it in the salesforce url
+                return str(case_number)
+        except ValueError:
+            return 'Not a valid case number!'
 
 def get_case(data):
     #if it's a private message to Spot

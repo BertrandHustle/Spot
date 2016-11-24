@@ -12,15 +12,21 @@ class SpotTests(unittest.TestCase):
     def test_parse_message(self):
         test_irc1 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
         test_irc2 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach:'
+        test_irc3 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie :hey :can::: you::::: :look at 01732845 it\'s about to breach:'
+
 
         test_message1 = 'ping bowtie hey can you look at 01732845? it\'s about to breach'
-        test_message2 = 'ping bowtie hey can you look at 01732845 it\'s about to breach:'
+        test_message2 = 'ping bowtie hey can you look at 01732845 it\'s about to breach'
+        test_message3 = None
 
         test_parse1 = functions.parse_message(test_irc1)
         test_parse2 = functions.parse_message(test_irc2)
+        test_parse3 = functions.parse_message(test_irc3)
 
         self.assertEqual(test_parse1, test_message1)
         self.assertEqual(test_parse2, test_message2)
+        self.assertEqual(test_parse3, test_message3)
+
 
     def test_parse_case_number(self):
 
