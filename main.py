@@ -41,7 +41,7 @@ def main():
         #functions
         functions.ping_pong(data)
         #functions.reply(data)
-        functions.list_protocol(data)
+        #functions.list_protocol(data)
         functions.get_case(data)
 
 if __name__ == '__main__':

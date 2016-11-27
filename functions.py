@@ -3,10 +3,10 @@ import socket
 import spotipy
 
 #init vars
-network = 'irc.devel.redhat.com'
+network = 'irc.freenode.net'
 port = 6667
 nick = 'Spot'
-channel = '#kankore'
+channel = '#spot-tester-channel'
 creator = 'bowtie'
 trigger = '!'
 #boilerplate
@@ -37,9 +37,9 @@ def join_channel(channel):
 #send/receive
 #data == type of data we're sending (e.g. PRIVMSG)
 #message == the message we're sending in plain text
-def send_to_irc(data, message):
+
+def send_to_irc(data, message = None):
     #print for debugging/dev purposes
-    print(data)
     if message:
         irc.send (bytes(data + ' :' + message + '\r\n', 'UTF-8'))
     else:
@@ -98,7 +98,6 @@ def parse_message(message):
 #  :bowtie|24x7|brb!~sgreenbe@10.12.212.97 PRIVMSG #Spot-testing-grounds :!help
 
 #parses case numbers out of irc messages
-#TODO: restrict results to 0-200000
 def parse_case_number(message):
 
     case_number = 0
