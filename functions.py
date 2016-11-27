@@ -69,8 +69,9 @@ def reply(data):
             pass
 
 def ping_pong(data):
-    #TODO: unify single/double quotes
     if data.find (bytes('PING', 'UTF-8')) != -1:
+    #TODO: test below to see if it's a cleaner solution
+    #if 'PING' in data:
         #there's probably a more elegant way to do this
         send_to_irc('PONG ' + data.decode().split()[1])
 
