@@ -40,8 +40,9 @@ def main():
 
         #functions
         functions.ping_pong(data)
-        #functions.reply(data)
+        functions.reply(data)
         #functions.list_protocol(data)
+        functions.listen_for_spotify(data)
         functions.get_case(data)
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ import spotipy
 #init vars
 network = 'irc.freenode.net'
 port = 6667
-nick = 'Spot'
+nick = 'Spotttttttttttssss'
 channel = '#spot-tester-channel'
 creator = 'bowtie'
 trigger = '!'
@@ -22,8 +22,8 @@ def irc_connect(network,port):
     print (irc.recv(4096),)
 
 def set_nick(nickname):
-    send_to_irc('NICK' + nick)
-    send_to_irc('USER' + nick + '8 *', 'bowtie\'s IRC bot')
+    send_to_irc('NICK ' + nick)
+    send_to_irc('USER ' + nick + ' 8 *', 'bowtie\'s IRC bot')
     #irc.send (bytes('NICK %s\r\n' % nick, 'UTF-8'))
     #irc.send (bytes('USER %s 8 * :bowtie\'s IRC bot\r\n'  % nick, 'UTF-8'))
 
@@ -42,8 +42,14 @@ def send_to_irc(data, message = None):
     #print for debugging/dev purposes
     if message:
         irc.send (bytes(data + ' :' + message + '\r\n', 'UTF-8'))
+        print (data + ' :' + message + '\r\n', 'UTF-8')
     else:
         irc.send (bytes(data + '\r\n', 'UTF-8'))
+        print (data + '\r\n', 'UTF-8')
+
+#this sends messages directly to (in) the irc channel
+def send_to_channel(data):
+
 
 def action_type(data):
     # this returns the type of action seen on the irc server
@@ -61,10 +67,10 @@ def reply(data):
     #if it's a private message to Spot
     if action_type(data) == 'PRIVMSG':
         try:
-            data.decode().split(' ')[4] == nick
-            #name of person who pinged me
-            name = data.decode().split('!')[0][1:]
-            irc.send (bytes('PRIVMSG {} :Hello {}, my name is Spot.  Pleased to meet you.\r\n'.format(channel, name), 'UTF-8'))
+            if data.decode().split(' ')[4] == nick:
+                #name of person who pinged me
+                name = data.decode().split('!')[0][1:]
+                irc.send (bytes('PRIVMSG {} :Hello {}, my name is Spot.  Pleased to meet you.\r\n'.format(channel, name), 'UTF-8'))
         except IndexError:
             pass
 
@@ -138,11 +144,11 @@ def get_spotify_track(track_name):
     return track_url
 
 def listen_for_spotify(data):
-    if action_type(data.decode()) == 'PRIVMSG' and parse_message(data.decode()).startswith('!spotify'):
+    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith('!spotify'):
         track_name = parse_message(data.decode())[8:]
         track_url = get_spotify_track(track_name)
         if track_url.startswith('https'):
-            send_to_irc(track_url)
+            send_to_irc('PRIVMSG ' +  channel, track_url)
         else:
             send_to_irc('Sorry, I couldn\'t find that song')
 
