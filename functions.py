@@ -3,13 +3,13 @@ import socket
 import spotipy
 
 #init vars
-network = 'irc.freenode.net'
+network = 'irc.yyz.redhat.com'
 port = 6667
-nick = 'Spotttttttttttssss'
-channel = '#spot-tester-channel'
+nick = 'Spot'
+channel = '#kankore'
 creator = 'bowtie'
-trigger = '!'
-#boilerplate
+
+#irc boilerplate
 irc = socket.socket (socket.AF_INET, socket.SOCK_STREAM)
 
 #bash commands (on which to punish!)
@@ -47,9 +47,9 @@ def send_to_irc(data, message = None):
         irc.send (bytes(data + '\r\n', 'UTF-8'))
         print (data + '\r\n', 'UTF-8')
 
-#this sends messages directly to (in) the irc channel
-def send_to_channel(data):
-
+#address irc channel directly
+def send_to_channel(channel, message):
+    irc.send (bytes('PRIVMSG {} :{}\r\n'.format(channel, message), 'UTF-8'))
 
 def action_type(data):
     # this returns the type of action seen on the irc server

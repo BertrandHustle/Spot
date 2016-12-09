@@ -31,7 +31,7 @@ def main():
     functions.irc_connect(network, port)
     functions.set_nick(nick)
     functions.join_channel(channel)
-    irc.send (bytes('PRIVMSG {} :{}\r\n'.format(channel, greeting), 'UTF-8'))
+    functions.send_to_channel(channel, greeting)
 
     while True:
         data = irc.recv(4096)
