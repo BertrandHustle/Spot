@@ -3,10 +3,10 @@ import socket
 import spotipy
 
 #init vars
-network = 'irc.yyz.redhat.com'
+network = 'irc.devel.redhat.com'
 port = 6667
-nick = 'Spot'
-channel = '#kankore'
+nick = 'Spotty'
+channel = '#spotland'
 creator = 'bowtie'
 
 #irc boilerplate
@@ -50,6 +50,14 @@ def send_to_irc(data, message = None):
 #address irc channel directly
 def send_to_channel(channel, message):
     irc.send (bytes('PRIVMSG {} :{}\r\n'.format(channel, message), 'UTF-8'))
+
+#as the name says: listens for a command from channel
+def listen_for(data, command):
+    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith(command):
+        return 1
+    else:
+        return 0
+
 
 def action_type(data):
     # this returns the type of action seen on the irc server
@@ -133,6 +141,12 @@ def get_case(data):
                     irc.send (bytes('PRIVMSG {} :https://c.na7.visual.force.com/apex/Case_View?sbstr={}\r\n'.format(channel, case_number), 'UTF-8'))
         except ValueError:
             pass
+
+#lists out Spot's functions to channel
+def help(data):
+    #TODO: make this a listening function
+    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith('!help'):
+        send_to_channel(channel, '!spotify == request Spotify track')
 
 def get_spotify_track(track_name):
     #spotipy init/boilerplate
