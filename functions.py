@@ -52,7 +52,7 @@ def send_to_channel(channel, message):
     irc.send (bytes('PRIVMSG {} :{}\r\n'.format(channel, message), 'UTF-8'))
 
 #as the name says: listens for a command from channel
-def listen_for(data, command):
+def hear(data, command):
     if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith(command):
         return 1
     else:
@@ -145,7 +145,7 @@ def get_case(data):
 #lists out Spot's functions to channel
 def help(data):
     #TODO: make this a listening function
-    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith('!help'):
+    if hear(data, '!help'):
         send_to_channel(channel, '!spotify == request Spotify track')
 
 def get_spotify_track(track_name):
@@ -158,7 +158,7 @@ def get_spotify_track(track_name):
     return track_url
 
 def listen_for_spotify(data):
-    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith('!spotify'):
+    if hear(data, '!spotify'):
         track_name = parse_message(data.decode())[8:]
         track_url = get_spotify_track(track_name)
         if track_url.startswith('https'):
