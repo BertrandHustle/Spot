@@ -128,7 +128,7 @@ def parse_case_number(message):
                 #we have to return this as a string so we can use it in the salesforce url
                 return str(case_number)
         except ValueError:
-            return 'Not a valid case number!'
+            pass
 
 def get_case(data):
     #if it's a private message to Spot
@@ -144,7 +144,6 @@ def get_case(data):
 
 #lists out Spot's functions to channel
 def help(data):
-    #TODO: make this a listening function
     if hear(data, '!help'):
         send_to_channel(channel, '!spotify == request Spotify track')
 
