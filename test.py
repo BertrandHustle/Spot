@@ -6,6 +6,7 @@
 import unittest
 import functions
 import spotipy
+import db_functions
 
 class SpotTests(unittest.TestCase):
 
@@ -49,6 +50,9 @@ class SpotTests(unittest.TestCase):
         test_spotify_url = functions.get_spotify_track(test_song_title)
 
         self.assertEqual(test_spotify_url, 'https://open.spotify.com/track/47l9wxr6RwgoTSfnseBRcf')
+
+    def test_check_if_in_db():
+        self.assertEqual(db_functions.check_if_in_db(), 0)
 
 if __name__ == '__main__':
     unittest.main()

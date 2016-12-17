@@ -5,7 +5,7 @@ import spotipy
 #init vars
 network = 'irc.devel.redhat.com'
 port = 6667
-nick = 'Spotty'
+nick = 'Spot'
 channel = '#spotland'
 creator = 'bowtie'
 
@@ -54,6 +54,13 @@ def send_to_channel(channel, message):
 #as the name says: listens for a command from channel
 def hear(data, command):
     if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith(command):
+        return 1
+    else:
+        return 0
+
+#same as hear, but for tail commands (e.g. name++)
+def reverse_hear(data, command):
+    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).endswith(command):
         return 1
     else:
         return 0
@@ -141,6 +148,9 @@ def get_case(data):
                     irc.send (bytes('PRIVMSG {} :https://c.na7.visual.force.com/apex/Case_View?sbstr={}\r\n'.format(channel, case_number), 'UTF-8'))
         except ValueError:
             pass
+        except TypeError:
+            pass
+
 
 #lists out Spot's functions to channel
 def help(data):

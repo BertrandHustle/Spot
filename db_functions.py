@@ -20,42 +20,44 @@ def init_dbs():
 
         #init tables
         karma_cursor.execute('''
-            CREATE TABLE users(id INTEGER PRIMARY KEY, nick TEXT, karma INTEGER)
+            CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, nick TEXT NOT NULL UNIQUE, karma INTEGER)
         ''')
         karma_db.commit()
 
 
         case_cursor.execute('''
-            CREATE TABLE cases(id INTEGER PRIMARY KEY, title TEXT, case_number INTEGER)
+            CREATE TABLE IF NOT EXITST cases(id INTEGER PRIMARY KEY, title TEXT, case_number INTEGER)
         ''')
         case_db.commit()
 
 
-def insert_user_into_db():
-    nick = 'test_nick'
-    karma = 0
+
+
+def insert_user_into_db(nick):
     karma_cursor.execute('''
         INSERT INTO users(nick, karma) VALUES(?, ?)
-    ''', (nick, karma))
+    ''', (nick, 0))
     print ('user added')
 
     karma_db.commit()
 
 
-#def insert_case_into_db():
-
-
 #this listens for karma statements, e.g. 'Name++'
 def listen_for_karma(data):
-    nick = functions.parse_message(data)
+    if functions.reverse_hear(data, '++'):
+        #TODO: fix this so decode is included in the parse_message fuction
+        message = functions.parse_message(data.decode())
+        for word in message:
+            insert_user_into_db(word)
+            karma_cursor('''
+                UPDATE users SET karma = karma + 1 WHERE nick =
+            ''' + word)
+
+
 
 def main():
-    #check if tables don't exist already
-    if not os.path.isfile(karma_dir) and not os.path.isfile(case_dir):
-        init_dbs()
 
-    insert_user_into_db()
-
+    init_dbs()
     #close dbs after using them
     karma_db.close()
     case_db.close()
