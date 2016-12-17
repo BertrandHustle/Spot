@@ -133,10 +133,11 @@ def parse_case_number(message):
     for word in message_words_array:
         try:
             #slice the first digit in case it's a '0'
-            case_number = int(word[1:])
+            int(word[1:])
+            case_number = int(word)
             if case_number > 0 and case_number < 2000000:
                 #we have to return this as a string so we can use it in the salesforce url
-                return str(case_number)
+                return ('0' + str(case_number))
         except ValueError:
             pass
 
@@ -148,7 +149,8 @@ def get_case(data):
             #TODO: this is gross, clean it up
             if int(case_number):
                 if len(case_number) == 8:
-                    irc.send (bytes('PRIVMSG {} :https://c.na7.visual.force.com/apex/Case_View?sbstr={}\r\n'.format(channel, case_number), 'UTF-8'))
+                    send_to_channel(channel, 'https://c.na7.visual.force.com/apex/Case_View?sbstr=' + case_number)
+                    #irc.send (bytes('PRIVMSG {} :https://c.na7.visual.force.com/apex/Case_View?sbstr={}\r\n'.format(channel, case_number), 'UTF-8'))
         except ValueError:
             pass
         except TypeError:
