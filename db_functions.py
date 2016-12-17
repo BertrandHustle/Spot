@@ -55,10 +55,12 @@ def listen_for_karma(data):
             if query_result_size == 0:
                 insert_user_into_db(word)
             #if they're already in the database
+            #TODO: this only updates karma when a new user is added...why?
             else:
                 karma_cursor.execute('''
                     UPDATE users SET karma = karma + 1 WHERE nick = ?
                 ''', [word])
+                karma_db.commit()
 
     #TODO: make this function announce the user's current karma after updating value
     #TODO: add a control flow path for negative karma
