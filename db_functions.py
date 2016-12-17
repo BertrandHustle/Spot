@@ -34,33 +34,37 @@ def insert_user_into_db(nick):
         INSERT INTO users(nick, karma) VALUES(?, ?)
     ''', (nick, 1))
     print ('user added')
-
     karma_db.commit()
 
 
 #this listens for karma statements, e.g. 'Name++'
 def listen_for_karma(data):
 
-    if functions.reverse_hear(data, '++'):
+    if functions.reverse_hear(data, '++') or functions.reverse_hear(data, '--'):
         #TODO: fix this so decode is included in the parse_message fuction
         message = functions.parse_message(data.decode()).split(' ')
         for word in message:
             #this slices the '++' off the end of the name
             word = word[:-2]
             karma_cursor.execute('SELECT nick FROM users WHERE nick = ?', [word])
-
             #I believe this is needed because executing the .fetchall twice obliterates the results from the first query?
             query_result_size = len((karma_cursor.fetchall()))
             #if we don't find the user already in the database:
             if query_result_size == 0:
                 insert_user_into_db(word)
-            #if they're already in the database
-            #TODO: this only updates karma when a new user is added...why?
-            else:
+            #if we're adding karma
+            elif functions.reverse_hear(data, '++'):
                 karma_cursor.execute('''
                     UPDATE users SET karma = karma + 1 WHERE nick = ?
                 ''', [word])
                 karma_db.commit()
+            #if we're removing karma
+            elif functions.reverse_hear(data, '--'):
+                karma_cursor.execute('''
+                    UPDATE users SET karma = karma - 1 WHERE nick = ?
+                ''', [word])
+                karma_db.commit()
+
 
     #TODO: make this function announce the user's current karma after updating value
     #TODO: add a control flow path for negative karma
