@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-
 #for some reason this needs to be run as
 #sudo python3.5 ./main.py
 
@@ -16,6 +15,7 @@ author = 'Scott Greenberg'
 email = 'sgreenbe@redhat.com'
 github = 'https://github.com/BertrandHustle/Spot'
 
+#irc init
 network = functions.network
 port = functions.port
 nick = functions.nick
@@ -23,7 +23,11 @@ channel = functions.channel
 irc = functions.irc
 greeting = 'Hello, my name is Spot.  Try typing a message with a case number in it!'
 
-#TODO: initialize db cursors here
+#database init
+karma_db = db_functions.karma_db
+karma_cursor = db_functions.karma_cursor
+case_db = db_functions.case_db
+case_cursor = db_functions.case_cursor
 
 #group of functions to be run in main loop
 main_functions = ()

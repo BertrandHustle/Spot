@@ -69,9 +69,12 @@ def reverse_hear(data, command):
 def action_type(data):
     # this returns the type of action seen on the irc server
     # examples: PRIVMSG,NOTICE,MODE
-    data = data.decode()
-    action = data.split(' ')[1]
-    return action
+    try:
+        data = data.decode()
+        action = data.split(' ')[1]
+        return action
+    except IndexError:
+        pass
 
 #irc message format
 

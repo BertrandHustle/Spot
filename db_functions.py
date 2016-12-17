@@ -8,12 +8,10 @@ import os
 karma_db = sqlite3.connect('karma_db')
 #we pass SQL commands cursor objects
 karma_cursor = karma_db.cursor()
-#directory where the karma db is
-karma_dir = '/home/sgreenbe/Python/Projects/Spot/karma_db'
 #creates/connects to case database
 case_db = sqlite3.connect('case_db')
 case_cursor = case_db.cursor()
-case_dir = '/home/sgreenbe/Python/Projects/Spot/case_db'
+
 
 #initializes databases and database objects
 def init_dbs():
@@ -26,11 +24,9 @@ def init_dbs():
 
 
         case_cursor.execute('''
-            CREATE TABLE IF NOT EXITST cases(id INTEGER PRIMARY KEY, title TEXT, case_number INTEGER)
+            CREATE TABLE IF NOT EXISTS cases(id INTEGER PRIMARY KEY, title TEXT, case_number INTEGER)
         ''')
         case_db.commit()
-
-
 
 
 def insert_user_into_db(nick):
@@ -46,12 +42,15 @@ def insert_user_into_db(nick):
 def listen_for_karma(data):
     if functions.reverse_hear(data, '++'):
         #TODO: fix this so decode is included in the parse_message fuction
-        message = functions.parse_message(data.decode())
+        message = functions.parse_message(data.decode()).split(' ')
+        print (message)
         for word in message:
             insert_user_into_db(word)
-            karma_cursor('''
-                UPDATE users SET karma = karma + 1 WHERE nick =
-            ''' + word)
+            karma_cursor.execute('''
+                UPDATE users SET karma = karma + 1 WHERE nick = ?
+            ''', [word])
+
+    #TODO: make this function announce the user's current karma after updating value
 
 
 
