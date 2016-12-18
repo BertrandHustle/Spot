@@ -36,6 +36,12 @@ def insert_user_into_db(nick):
     print ('user added')
     karma_db.commit()
 
+#shouts user karma to irc
+def shout_user_karma(nick):
+    karma_cursor.execute('SELECT karma FROM users WHERE nick = ?', [nick])
+    karma = str(karma_cursor.fetchone()[0])
+    functions.send_to_channel(functions.channel, nick + ' currently has ' + karma + ' karma')
+
 
 #this listens for karma statements, e.g. 'Name++'
 def listen_for_karma(data):
@@ -45,29 +51,28 @@ def listen_for_karma(data):
         message = functions.parse_message(data.decode()).split(' ')
         for word in message:
             #this slices the '++' off the end of the name
-            word = word[:-2]
-            karma_cursor.execute('SELECT nick FROM users WHERE nick = ?', [word])
+            nick = word[:-2]
+            karma_cursor.execute('SELECT nick FROM users WHERE nick = ?', [nick])
             #I believe this is needed because executing the .fetchall twice obliterates the results from the first query?
             query_result_size = len((karma_cursor.fetchall()))
             #if we don't find the user already in the database:
             if query_result_size == 0:
-                insert_user_into_db(word)
+                insert_user_into_db(nick)
             #if we're adding karma
             elif functions.reverse_hear(data, '++'):
                 karma_cursor.execute('''
                     UPDATE users SET karma = karma + 1 WHERE nick = ?
-                ''', [word])
+                ''', [nick])
                 karma_db.commit()
+                shout_user_karma(nick)
             #if we're removing karma
             elif functions.reverse_hear(data, '--'):
                 karma_cursor.execute('''
                     UPDATE users SET karma = karma - 1 WHERE nick = ?
-                ''', [word])
+                ''', [nick])
                 karma_db.commit()
 
-
     #TODO: make this function announce the user's current karma after updating value
-    #TODO: add a control flow path for negative karma
 
 def main():
 
