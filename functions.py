@@ -106,6 +106,7 @@ def ping_pong(data):
         send_to_irc('PONG ' + data.decode().split()[1])
 
 #:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
+#:bowtie!~sgreenbe@10.12.212.97 PRIVMSG #kankore :message
 
 #parses incoming irc messages
 def parse_message(message):
@@ -135,18 +136,11 @@ def parse_name(message):
 #https://c.na7.visual.force.com/apex/Case_View?sbstr=$CASENUMBER
 #for accessing cases replace $CASENUMBER w/ case number
 
-#  :bowtie|24x7|brb!~sgreenbe@10.12.212.97 PRIVMSG #Spot-testing-grounds :!help
-
 #parses case numbers out of irc messages
-#TODO: replace this with a regex: re.findall('[0-9]{8}', string)
-
 def parse_case_number(message):
     message = parse_message(message)
     #split the message into individual words
-    try:
-        message_words_array = message.split(' ')
-    except AttributeError:
-        pass
+    message_words_array = message.split(' ')
     for word in message_words_array:
         regex_results = re.findall('[0-9]{8}', word)
         #TODO: fix this to work for multiple case numbers
