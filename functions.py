@@ -1,6 +1,7 @@
 import os
 import socket
 import spotipy
+import re
 
 #init vars
 network = 'irc.devel.redhat.com'
@@ -53,18 +54,23 @@ def send_to_channel(channel, message):
 
 #as the name says: listens for a command from channel
 def hear(data, command):
-    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith(command):
-        return 1
-    else:
-        return 0
+    try:
+        if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).startswith(command):
+            return 1
+        else:
+            return 0
+    except AttributeError:
+        pass
 
 #same as hear, but for tail commands (e.g. name++)
 def reverse_hear(data, command):
-    if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).endswith(command):
-        return 1
-    else:
-        return 0
-
+    try:
+        if action_type(data) == 'PRIVMSG' and parse_message(data.decode()).endswith(command):
+            return 1
+        else:
+            return 0
+    except AttributeError:
+        pass
 
 def action_type(data):
     # this returns the type of action seen on the irc server
@@ -112,7 +118,7 @@ def parse_message(message):
     elif len(split_on_colon) == 4:
         return split_on_colon[len(split_on_colon)-2]
     else:
-        irc.send (bytes('PRIVMSG {} :Slow down on the colons!\r\n'.format(channel), 'UTF-8'))
+        print('incorrect message format')
 
 #parses name out of incoming irc message
 def parse_name(message):
@@ -132,24 +138,20 @@ def parse_name(message):
 #  :bowtie|24x7|brb!~sgreenbe@10.12.212.97 PRIVMSG #Spot-testing-grounds :!help
 
 #parses case numbers out of irc messages
+#TODO: replace this with a regex: re.findall('[0-9]{8}', string)
+
 def parse_case_number(message):
-    case_number = 0
     message = parse_message(message)
     #split the message into individual words
-    message_words_array = message.split(' ')
-
+    try:
+        message_words_array = message.split(' ')
+    except AttributeError:
+        pass
     for word in message_words_array:
-        #to handle cases like '01754851!' or '12458963?'
-        if (word[len(word)-1] == '!' or word[len(word)-1] == '?') and int(word[:-1]) > 0 and int(word[:-1]) < 2000000:
-            return (word[:-1])
-        else:
-            try:
-                case_number = int(word)
-                if case_number > 0 and case_number < 2000000:
-                    #we have to return this as a string so we can use it in the salesforce url
-                    return ('0' + str(case_number))
-            except ValueError:
-                pass
+        regex_results = re.findall('[0-9]{8}', word)
+        #TODO: fix this to work for multiple case numbers
+        if len(regex_results) == 1:
+            return regex_results[0]
 
 def get_case(data):
     #if it's a private message to Spot and not unifiedbot0 (temporary clause till I can do proper error handling here)
@@ -160,15 +162,15 @@ def get_case(data):
             if int(case_number):
                 if len(case_number) == 8:
                     send_to_channel(channel, 'https://c.na7.visual.force.com/apex/Case_View?sbstr=' + case_number)
-                    #irc.send (bytes('PRIVMSG {} :https://c.na7.visual.force.com/apex/Case_View?sbstr={}\r\n'.format(channel, case_number), 'UTF-8'))
         except ValueError:
             pass
         except TypeError:
             pass
-    else: print('test passed!')
+
 
 
 #lists out Spot's functions to channel
+#TODO: add all functions to this
 def help(data):
     if hear(data, '!help'):
         send_to_channel(channel, '!spotify == request Spotify track')
