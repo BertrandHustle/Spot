@@ -21,7 +21,7 @@ port = functions.port
 nick = functions.nick
 channel = functions.channel
 irc = functions.irc
-greeting = 'Hello, my name is Spot.  Try typing a message with a case number in it!'
+greeting = 'Hello, my name is Spot.  Try typing a message with a case number in it! Or try to kill me!'
 
 #database init
 karma_db = db_functions.karma_db

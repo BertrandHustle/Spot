@@ -13,21 +13,18 @@ case_db = sqlite3.connect('case_db')
 case_cursor = case_db.cursor()
 
 
-#initializes databases and database objects
+#initializes databases and tables
 def init_dbs():
-
         #init tables
         karma_cursor.execute('''
             CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, nick TEXT NOT NULL UNIQUE, karma INTEGER)
         ''')
         karma_db.commit()
 
-
         case_cursor.execute('''
             CREATE TABLE IF NOT EXISTS cases(id INTEGER PRIMARY KEY, title TEXT, case_number INTEGER)
         ''')
         case_db.commit()
-
 
 def insert_user_into_db(nick):
     karma_cursor.execute('''
@@ -42,10 +39,8 @@ def shout_user_karma(nick):
     karma = str(karma_cursor.fetchone()[0])
     functions.send_to_channel(functions.channel, nick + ' currently has ' + karma + ' karma')
 
-
 #this listens for karma statements, e.g. 'Name++'
 def listen_for_karma(data):
-
     if functions.reverse_hear(data, '++') or functions.reverse_hear(data, '--'):
         #TODO: fix this so decode is included in the parse_message fuction
         message = functions.parse_message(data.decode()).split(' ')
@@ -58,6 +53,7 @@ def listen_for_karma(data):
             #if we don't find the user already in the database:
             if query_result_size == 0:
                 insert_user_into_db(nick)
+                shout_user_karma(nick)
             #if we're adding karma
             elif functions.reverse_hear(data, '++'):
                 karma_cursor.execute('''
@@ -71,15 +67,4 @@ def listen_for_karma(data):
                     UPDATE users SET karma = karma - 1 WHERE nick = ?
                 ''', [nick])
                 karma_db.commit()
-
-    #TODO: make this function announce the user's current karma after updating value
-
-def main():
-
-    init_dbs()
-    #close dbs after using them
-    karma_db.close()
-    case_db.close()
-
-if __name__ == '__main__':
-    main()
+                shout_user_karma(nick)

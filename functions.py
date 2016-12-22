@@ -6,7 +6,7 @@ import spotipy
 network = 'irc.devel.redhat.com'
 port = 6667
 nick = 'Spot'
-channel = '#spotland'
+channel = '#kankore'
 creator = 'bowtie'
 
 #irc boilerplate
@@ -103,7 +103,6 @@ def ping_pong(data):
 
 #parses incoming irc messages
 def parse_message(message):
-    #convert to str
     split_on_colon = message.split(':')
     if len(split_on_colon) <= 3:
         #the actual message contained in the irc data
@@ -115,6 +114,16 @@ def parse_message(message):
     else:
         irc.send (bytes('PRIVMSG {} :Slow down on the colons!\r\n'.format(channel), 'UTF-8'))
 
+#parses name out of incoming irc message
+def parse_name(message):
+    try:
+        split_on_bang = message.split('!')
+        #slice to remove the colon
+        name = split_on_bang[0][1:]
+        return name
+    except IndexError:
+        pass
+
 #salesforce functions
 
 #https://c.na7.visual.force.com/apex/Case_View?sbstr=$CASENUMBER
@@ -124,26 +133,27 @@ def parse_message(message):
 
 #parses case numbers out of irc messages
 def parse_case_number(message):
-
     case_number = 0
     message = parse_message(message)
     #split the message into individual words
     message_words_array = message.split(' ')
 
     for word in message_words_array:
-        try:
-            #slice the first digit in case it's a '0'
-            int(word[1:])
-            case_number = int(word)
-            if case_number > 0 and case_number < 2000000:
-                #we have to return this as a string so we can use it in the salesforce url
-                return ('0' + str(case_number))
-        except ValueError:
-            pass
+        #to handle cases like '01754851!' or '12458963?'
+        if (word[len(word)-1] == '!' or word[len(word)-1] == '?') and int(word[:-1]) > 0 and int(word[:-1]) < 2000000:
+            return (word[:-1])
+        else:
+            try:
+                case_number = int(word)
+                if case_number > 0 and case_number < 2000000:
+                    #we have to return this as a string so we can use it in the salesforce url
+                    return ('0' + str(case_number))
+            except ValueError:
+                pass
 
 def get_case(data):
-    #if it's a private message to Spot
-    if action_type(data) == 'PRIVMSG':
+    #if it's a private message to Spot and not unifiedbot0 (temporary clause till I can do proper error handling here)
+    if action_type(data) == 'PRIVMSG' and parse_name(data.decode()) != 'unifiedbot0':
         try:
             case_number = parse_case_number(data.decode())
             #TODO: this is gross, clean it up
@@ -155,6 +165,7 @@ def get_case(data):
             pass
         except TypeError:
             pass
+    else: print('test passed!')
 
 
 #lists out Spot's functions to channel
