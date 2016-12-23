@@ -11,13 +11,13 @@ import db_functions
 class SpotTests(unittest.TestCase):
 
     def test_parse_message(self):
-        test_irc1 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
+        test_irc1 = ':towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
         test_irc2 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach:'
-        test_irc3 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie :hey :can::: you::::: :look at 01732845 it\'s about to breach:'
+        test_irc3 = ':towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie :hey :can::: you::::: :look at 01732845 it\'s about to breach:'
 
         test_message1 = 'ping bowtie hey can you look at 01732845? it\'s about to breach'
-        test_message2 = 'ping bowtie hey can you look at 01732845 it\'s about to breach'
-        test_message3 = None
+        test_message2 = 'ping bowtie hey can you look at 01732845 it\'s about to breach:'
+        test_message3 = 'ping bowtie :hey :can::: you::::: :look at 01732845 it\'s about to breach:'
 
         test_parse1 = functions.parse_message(test_irc1)
         test_parse2 = functions.parse_message(test_irc2)
@@ -28,9 +28,9 @@ class SpotTests(unittest.TestCase):
         self.assertEqual(test_parse3, test_message3)
 
     def test_parse_case_number(self):
-        test_case_message1 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
-        test_case_message2 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach'
-        test_case_message3 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach:'
+        test_case_message1 = ':towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845? it\'s about to breach'
+        test_case_message2 = ':towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach'
+        test_case_message3 = ':towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach:'
         test_case_message4 = ':cbeezy_gs4!~cboyd@10.13.249.182 PRIVMSG #kankore :01732845:'
         #split results: ['', 'cbeezy_gs4!~cboyd@10.13.249.182 PRIVMSG #kankore ', '01732845', '']
         test_case_message5 = ':bowtie!~sgreenbe@10.12.212.97 PRIVMSG #kankore :hdkjlsahdkjaskjncjnkcljn::::::::01732845"sadajij'

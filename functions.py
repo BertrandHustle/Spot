@@ -112,11 +112,13 @@ def ping_pong(data):
 #parses incoming irc messages
 def parse_message(message):
     #init
-    split_on_colon = message.split(':', maxsplit=1)
+    split_on_colon = message.split(':', maxsplit=2)
     message = ''
-    #if the first character of the first member of the split array is a letter or number (for messages to channel):
+    #if the first character of the first member of the split array is a letter or number (for messages to channel)
     try:
-        if split_on_colon[0][0].isalpha() or split_on_colon[0][0].isdigit():
+        #use this to test how to parse out message below
+        test_char = split_on_colon[0][0]
+        if test_char.isalpha() or test_char.isdigit() and test_char != '':
             message = split_on_colon[1]
             if message != None:
                 return message
