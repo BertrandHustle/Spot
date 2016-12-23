@@ -4,6 +4,7 @@ import spotipy
 import re
 
 #init vars
+#TODO: add this to conf file and read from there
 network = 'irc.devel.redhat.com'
 port = 6667
 nick = 'Spot'
@@ -110,7 +111,22 @@ def ping_pong(data):
 
 #parses incoming irc messages
 def parse_message(message):
-    split_on_colon = message.split(':')
+    #init
+    split_on_colon = message.split(':', maxsplit=1)
+    message = ''
+    #if the first character of the first member of the split array is a letter or number (for messages to channel):
+    try:
+        if split_on_colon[0][0].isalpha() or split_on_colon[0][0].isdigit():
+            message = split_on_colon[1]
+            if message != None:
+                return message
+        else:
+            message = split_on_colon[2]
+            if message != None:
+                return message
+    except IndexError:
+        pass
+
     if len(split_on_colon) <= 3:
         #the actual message contained in the irc data
         return split_on_colon[len(split_on_colon)-1]
@@ -118,8 +134,6 @@ def parse_message(message):
     #:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie:'
     elif len(split_on_colon) == 4:
         return split_on_colon[len(split_on_colon)-2]
-    else:
-        print('incorrect message format')
 
 #parses name out of incoming irc message
 def parse_name(message):

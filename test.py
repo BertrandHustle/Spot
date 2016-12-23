@@ -32,9 +32,10 @@ class SpotTests(unittest.TestCase):
         test_case_message2 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach'
         test_case_message3 = '#:towey!~mtowey@10.12.213.6 PRIVMSG bowtie :ping bowtie hey can you look at 01732845 it\'s about to breach:'
         test_case_message4 = ':cbeezy_gs4!~cboyd@10.13.249.182 PRIVMSG #kankore :01732845:'
-        #TODO: fix this case
+        #split results: ['', 'cbeezy_gs4!~cboyd@10.13.249.182 PRIVMSG #kankore ', '01732845', '']
         test_case_message5 = ':bowtie!~sgreenbe@10.12.212.97 PRIVMSG #kankore :hdkjlsahdkjaskjncjnkcljn::::::::01732845"sadajij'
-
+        test_case_message6 = 'PRIVMSG #spotland :!@#*!*#@JFKASD01732845JFLA000 0123MSL:GJGjaljsdjlkaj728: 7389:128921:8309182903 829398 :::: :: : '
+        #split results: ['PRIVMSG #spotland ', '!@#*!*#@JFKASD01752243JFLA000 0123MSL', 'GJGjaljsdjlkaj728', ' 7389', '128921', '8309182903 829398 ', '', '', '', ' ', '', ' ', ' ']
         test_case_number = '01732845'
 
         self.assertEqual(test_case_number, functions.parse_case_number(test_case_message1))
@@ -42,6 +43,7 @@ class SpotTests(unittest.TestCase):
         self.assertEqual(test_case_number, functions.parse_case_number(test_case_message3))
         self.assertEqual(test_case_number, functions.parse_case_number(test_case_message4))
         self.assertEqual(test_case_number, functions.parse_case_number(test_case_message5))
+        self.assertEqual(test_case_number, functions.parse_case_number(test_case_message6))
 
     def test_get_case(self):
         #test to make sure he doesn't talk to unifiedbot0
