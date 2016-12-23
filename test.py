@@ -58,6 +58,8 @@ class SpotTests(unittest.TestCase):
 
     def test_get_spotify_track(self):
         test_song_title = 'Redbone'
+        test_song_message = ':bowtie!~sgreenbe@10.12.212.97 PRIVMSG #spotland :!spotify tip toen in my jordans'
+        
         test_spotify_url = functions.get_spotify_track(test_song_title)
         self.assertEqual(test_spotify_url, 'https://open.spotify.com/track/3kxfsdsCpFgN412fpnW85Y')
 

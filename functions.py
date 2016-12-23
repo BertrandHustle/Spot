@@ -8,7 +8,7 @@ import re
 network = 'irc.devel.redhat.com'
 port = 6667
 nick = 'Spot'
-channel = '#kankore'
+channel = '#spotland'
 creator = 'bowtie'
 
 #irc boilerplate
@@ -83,12 +83,8 @@ def action_type(data):
     except IndexError:
         pass
 
-#irc message format
-
-#TODO: make help/list of commands feature (possibly by having a description = var via OOP?)
-#TODO: generalize this into one function!
-
 def reply(data):
+    #TODO: change this so it only replies on !hello
     #if it's a private message to Spot
     if action_type(data) == 'PRIVMSG':
         try:
@@ -158,6 +154,7 @@ def parse_case_number(message):
     #split the message into individual words
     message_words_array = message.split(' ')
     for word in message_words_array:
+        #TODO: fix this so it only works with exact 8 digit numbers
         regex_results = re.findall('[0-9]{8}', word)
         #TODO: fix this to work for multiple case numbers
         if len(regex_results) == 1:
@@ -177,14 +174,13 @@ def get_case(data):
         except TypeError:
             pass
 
-
-
 #lists out Spot's functions to channel
 #TODO: add all functions to this
 def help(data):
     if hear(data, '!help'):
         send_to_channel(channel, '!spotify == request Spotify track')
 
+#TODO: add error handling if no results are returned
 def get_spotify_track(track_name):
     #spotipy init/boilerplate
     spotify_fetcher = spotipy.Spotify()
@@ -194,14 +190,18 @@ def get_spotify_track(track_name):
     track_url =  search_result.get('tracks').get('items')[0].get('external_urls').get('spotify')
     return track_url
 
+
 def listen_for_spotify(data):
     if hear(data, '!spotify'):
-        track_name = parse_message(data.decode())[8:]
-        track_url = get_spotify_track(track_name)
-        if track_url.startswith('https'):
-            send_to_irc('PRIVMSG ' +  channel, track_url)
-        else:
-            send_to_irc('Sorry, I couldn\'t find that song')
+        try:
+            #this needs to be sliced to slice off the command part ('!spotify') of the request
+            track_name = parse_message(data.decode())[8:]
+            print(track_name)
+            track_url = get_spotify_track(track_name)
+            if track_url.startswith('https'):
+                send_to_irc('PRIVMSG ' +  channel, track_url)
+        except IndexError:
+            send_to_channel(channel, 'Sorry, I couldn\'t find that song')
 
 
 

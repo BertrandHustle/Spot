@@ -68,3 +68,6 @@ def listen_for_karma(data):
                 ''', [nick])
                 karma_db.commit()
                 shout_user_karma(nick)
+
+#function to punish people if they accidentally type in a bash command
+#def punish_bash(data):
